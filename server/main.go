@@ -97,7 +97,7 @@ func GetExchange(ctx context.Context) (*USDBRL, error) {
 }
 
 func CreateExchange(ctx context.Context, usdbrl *USDBRL) (*Exchange, error) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Microsecond)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
 	defer cancel()
 
 	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -25,23 +25,24 @@ type USDBRL struct {
 }
 
 func main() {
+	c := http.Client{}
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", "http://localhost:8080/cotacao", nil)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Erro ao fazer a requisição: %v\n", err)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := c.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Fprintf(os.Stderr, "Erro ao fazer a requisição: %v\n", err)
 	}
 
 	defer resp.Body.Close()
 
-	res, err := ioutil.ReadAll(resp.Body)
+	res, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Erro ao ler a resposta: %v\n", err)

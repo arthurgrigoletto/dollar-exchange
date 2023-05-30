@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -97,7 +98,7 @@ func GetExchange(ctx context.Context) (*USDBRL, error) {
 }
 
 func CreateExchange(ctx context.Context, usdbrl *USDBRL) (*Exchange, error) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Nanosecond)
 	defer cancel()
 
 	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
@@ -113,7 +114,11 @@ func CreateExchange(ctx context.Context, usdbrl *USDBRL) (*Exchange, error) {
 		Value: usdbrl.Bid,
 	}
 
-	db.WithContext(ctx).Create(&exchange)
+	err = db.WithContext(ctx).Create(&exchange).Error
+
+	if err != nil {
+		fmt.Println("Timeout: Não foi possível criar registro no banco de dados")
+	}
 
 	return &exchange, nil
 }
